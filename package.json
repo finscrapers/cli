@@ -1,0 +1,55 @@
+{
+  "name": "@finscrapers/finscrapers",
+  "version": "1.0.0-rc.1",
+  "description": "Invest like Warren Buffet.",
+  "keywords": [
+    "Yahho Finance",
+    "Scraping",
+    "Automation",
+    "puppeteer",
+    "elasticsearch",
+    "kibana",
+    "Financial Analysis"
+  ],
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/finscrapers/finscrapers.git"
+  },
+  "author": "Felix Baron <45421716+felixbaron@users.noreply.github.com>",
+  "license": "MIT",
+  "ava": {
+    "compileEnhancements": false,
+    "extensions": ["ts"],
+    "require": ["ts-node/register"]
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/script/finscrapers.js",
+    "debug": "npx inspect node_modules/ava/profile.js test/index.test.ts",
+    "test": "npx ava"
+  },
+  "bin": {
+    "finscrapers": "dist/script/finscrapers.js"
+  },
+  "devDependencies": {
+    "@types/elasticsearch": "^5.0.30",
+    "@types/node": "^10.12.18",
+    "@types/puppeteer": "^1.11.2",
+    "ava": "^1.1.0",
+    "inspect-process": "^0.5.0",
+    "ts-node": "^8.0.1",
+    "typescript": "^3.2.4"
+  },
+  "dependencies": {
+    "commander": "^2.19.0",
+    "elasticsearch": "^15.3.1",
+    "puppeteer": "^1.11.0"
+  },
+  "bugs": {
+    "url": "https://github.com/finscrapers/finscrapers/issues"
+  },
+  "homepage": "https://github.com/finscrapers/finscrapers#readme",
+  "directories": {
+    "test": "test"
+  }
+}
