@@ -1,6 +1,6 @@
 {
   "name": "@finscrapers/finscrapers",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.4",
   "description": "Invest like Warren Buffet.",
   "keywords": [
     "Yahho Finance",
@@ -20,13 +20,18 @@
   "license": "MIT",
   "ava": {
     "compileEnhancements": false,
-    "extensions": ["ts"],
-    "require": ["ts-node/register"]
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   },
   "scripts": {
     "build": "tsc && chmod +x dist/script/finscrapers.js",
     "debug": "npx inspect node_modules/ava/profile.js test/index.test.ts",
-    "test": "npx ava"
+    "test": "npx ava",
+    "release": "yarn build && npm publish"
   },
   "bin": {
     "finscrapers": "dist/script/finscrapers.js"

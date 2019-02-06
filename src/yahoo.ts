@@ -61,7 +61,7 @@ export default class Yahoo extends Bot {
           await page.waitForSelector('#Main table');
 
           // Scroll down to load data
-          page.evaluate(() => {
+          await page.evaluate(() => {
             window.scrollBy(0, window.innerHeight * 10);
           });
 
@@ -91,6 +91,7 @@ export default class Yahoo extends Bot {
         await this.browser.close();
       } catch (error) {
         this.browser.close();
+        return Promise.reject(new Error('Puppeteer error: ' + error));
       }
     }
     return Promise.resolve();

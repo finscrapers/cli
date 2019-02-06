@@ -42,6 +42,7 @@ var _this = this;
 exports.__esModule = true;
 var commander_1 = __importDefault(require("commander"));
 var fs_1 = __importDefault(require("fs"));
+var package_json_1 = require("../package.json");
 var src_1 = require("../src");
 (function () { return __awaiter(_this, void 0, void 0, function () {
     var data, symbols, host, options, bot;
@@ -50,7 +51,7 @@ var src_1 = require("../src");
             case 0:
                 commander_1["default"]
                     .description('run Puppeteer bot on Yahoo Finance and save results to Elasticsearch')
-                    .version('1.0.0')
+                    .version(package_json_1.version)
                     .option('-e, --elasticsearch [value]', 'Path to Elasticsearch host, defaults to http://localhost:9200', function (input) { return input; })
                     .option('-s, --symbols <items>', 'Relative path of the files with the symbols to scrape, e.g. ~/symbols.json', function (input) { return input; })
                     .option('-h, --headless', 'Runs Puppeteer in headless mode if the flag is given. You will not see the browser', function (input) { return input; })

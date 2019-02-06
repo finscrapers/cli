@@ -76,7 +76,7 @@ var Yahoo = /** @class */ (function (_super) {
     }
     Yahoo.prototype.scrape = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var page, symbols, consent, result, i, _i, symbols_1, symbol, summary, prices;
+            var page, symbols, consent, result, i, _i, symbols_1, symbol, summary, prices, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: 
@@ -85,41 +85,42 @@ var Yahoo = /** @class */ (function (_super) {
                     case 1:
                         // Initialize puppeteer
                         _a.sent();
-                        if (!this.browser) return [3 /*break*/, 17];
+                        if (!this.browser) return [3 /*break*/, 20];
                         page = this.page;
                         symbols = this.symbols;
                         if (!page) {
                             return [2 /*return*/, Promise.reject(new Error('Puppeteer not initialized'))];
                         }
-                        // Visit Yahoo
-                        return [4 /*yield*/, page.goto('https://finance.yahoo.com/')];
+                        _a.label = 2;
                     case 2:
-                        // Visit Yahoo
+                        _a.trys.push([2, 19, , 20]);
+                        return [4 /*yield*/, page.goto('https://finance.yahoo.com/')];
+                    case 3:
                         _a.sent();
                         return [4 /*yield*/, page.$('button[name=agree]')];
-                    case 3:
-                        consent = _a.sent();
-                        if (!consent) return [3 /*break*/, 6];
-                        return [4 /*yield*/, consent.click()];
                     case 4:
-                        _a.sent();
-                        return [4 /*yield*/, page.waitForSelector('#app')];
+                        consent = _a.sent();
+                        if (!consent) return [3 /*break*/, 7];
+                        return [4 /*yield*/, consent.click()];
                     case 5:
                         _a.sent();
-                        _a.label = 6;
+                        return [4 /*yield*/, page.waitForSelector('#app')];
                     case 6:
+                        _a.sent();
+                        _a.label = 7;
+                    case 7:
                         result = [];
                         i = 0;
                         _i = 0, symbols_1 = symbols;
-                        _a.label = 7;
-                    case 7:
-                        if (!(_i < symbols_1.length)) return [3 /*break*/, 15];
+                        _a.label = 8;
+                    case 8:
+                        if (!(_i < symbols_1.length)) return [3 /*break*/, 17];
                         symbol = symbols_1[_i];
                         return [4 /*yield*/, page.goto("https://finance.yahoo.com/quote/" + symbol)];
-                    case 8:
+                    case 9:
                         _a.sent();
                         return [4 /*yield*/, page.waitForSelector('#Main table')];
-                    case 9:
+                    case 10:
                         _a.sent();
                         return [4 /*yield*/, page.$$eval('#Main table tbody tr', function (rows, shallowSymbol) {
                                 var obj = { Symbol: shallowSymbol };
@@ -131,21 +132,24 @@ var Yahoo = /** @class */ (function (_super) {
                             }, 
                             // symbol injected in $$eval function
                             symbol)];
-                    case 10:
+                    case 11:
                         summary = _a.sent();
                         result[i] = summary;
                         // Scrape Historical Data Page
                         return [4 /*yield*/, page.goto("https://finance.yahoo.com/quote/" + symbol + "/history")];
-                    case 11:
+                    case 12:
                         // Scrape Historical Data Page
                         _a.sent();
                         return [4 /*yield*/, page.waitForSelector('#Main table')];
-                    case 12:
+                    case 13:
                         _a.sent();
                         // Scroll down to load data
-                        page.evaluate(function () {
-                            window.scrollBy(0, window.innerHeight * 10);
-                        });
+                        return [4 /*yield*/, page.evaluate(function () {
+                                window.scrollBy(0, window.innerHeight * 10);
+                            })];
+                    case 14:
+                        // Scroll down to load data
+                        _a.sent();
                         return [4 /*yield*/, page.$$eval('#Main table tbody tr', function (rows, symbolShadow) {
                                 var obj = { Symbol: symbolShadow, Prices: [] };
                                 Array.from(rows).map(function (row) {
@@ -155,23 +159,27 @@ var Yahoo = /** @class */ (function (_super) {
                                 });
                                 return obj;
                             }, symbol)];
-                    case 13:
+                    case 15:
                         prices = _a.sent();
                         // Assign prices to result map
                         Object.assign(result[i], prices);
                         // Iterate
                         i++;
-                        _a.label = 14;
-                    case 14:
+                        _a.label = 16;
+                    case 16:
                         _i++;
-                        return [3 /*break*/, 7];
-                    case 15:
+                        return [3 /*break*/, 8];
+                    case 17:
                         this.data = result;
                         return [4 /*yield*/, this.browser.close()];
-                    case 16:
+                    case 18:
                         _a.sent();
-                        _a.label = 17;
-                    case 17: return [2 /*return*/, Promise.resolve()];
+                        return [3 /*break*/, 20];
+                    case 19:
+                        error_1 = _a.sent();
+                        this.browser.close();
+                        return [2 /*return*/, Promise.reject(new Error('Puppeteer error: ' + error_1))];
+                    case 20: return [2 /*return*/, Promise.resolve()];
                 }
             });
         });
@@ -179,7 +187,7 @@ var Yahoo = /** @class */ (function (_super) {
     // Saves scraped data to Elasticsearch
     Yahoo.prototype.save = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var model, client, toOperations, error_1;
+            var model, client, toOperations, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -222,8 +230,8 @@ var Yahoo = /** @class */ (function (_super) {
                         _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        error_1 = _a.sent();
-                        throw new Error(error_1);
+                        error_2 = _a.sent();
+                        throw new Error(error_2);
                     case 4: return [2 /*return*/, Promise.resolve(this.data)];
                 }
             });

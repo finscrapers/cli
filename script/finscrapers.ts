@@ -2,6 +2,7 @@
 
 import program from 'commander';
 import fs from 'fs';
+import {version} from '../package.json';
 import {Yahoo} from '../src';
 import {IOptions} from '../src/interfaces';
 
@@ -10,7 +11,7 @@ import {IOptions} from '../src/interfaces';
     .description(
       'run Puppeteer bot on Yahoo Finance and save results to Elasticsearch',
     )
-    .version('1.0.0')
+    .version(version)
     .option(
       '-e, --elasticsearch [value]',
       'Path to Elasticsearch host, defaults to http://localhost:9200',
