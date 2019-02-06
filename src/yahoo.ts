@@ -19,75 +19,79 @@ export default class Yahoo extends Bot {
       }
 
       // Visit Yahoo
-      await page.goto('https://finance.yahoo.com/');
+      try {
+        await page.goto('https://finance.yahoo.com/');
 
-      // Click on consent
-      const consent = await page.$('button[name=agree]');
-      if (consent) {
-        await consent.click();
-        await page.waitForSelector('#app');
+        // Click on consent
+        const consent = await page.$('button[name=agree]');
+        if (consent) {
+          await consent.click();
+          await page.waitForSelector('#app');
+        }
+
+        // Saving results for return value
+        const result: object[] = [];
+
+        // Iterate symbols
+        let i: number = 0;
+        for (const symbol of symbols) {
+          await page.goto(`https://finance.yahoo.com/quote/${symbol}`);
+          await page.waitForSelector('#Main table');
+
+          // Scrape Summary page
+          const summary = await page.$$eval(
+            '#Main table tbody tr',
+            (rows, shallowSymbol) => {
+              const obj: object = {Symbol: shallowSymbol};
+              // Iterate through table
+              Array.from(rows).map(row => {
+                (obj as any)[`${row.children[0].textContent}`] = `${
+                  row.children[1].textContent
+                }`;
+              });
+              return obj;
+            },
+            // symbol injected in $$eval function
+            symbol,
+          );
+          result[i] = summary;
+
+          // Scrape Historical Data Page
+          await page.goto(`https://finance.yahoo.com/quote/${symbol}/history`);
+          await page.waitForSelector('#Main table');
+
+          // Scroll down to load data
+          page.evaluate(() => {
+            window.scrollBy(0, window.innerHeight * 10);
+          });
+
+          // Scrape pricing table
+          const prices = await page.$$eval(
+            '#Main table tbody tr',
+            (rows, symbolShadow) => {
+              const obj: any = {Symbol: symbolShadow, Prices: []};
+              Array.from(rows).map(row => {
+                const price: object = {};
+                (price as any)[`${row.children[0].textContent}`] = `${
+                  row.children[1].textContent
+                }`;
+                obj.Prices.push(price);
+              });
+              return obj;
+            },
+            symbol,
+          );
+          // Assign prices to result map
+          Object.assign(result[i], prices);
+
+          // Iterate
+          i++;
+        }
+        this.data = result;
+        await this.browser.close();
+      } catch (error) {
+        this.browser.close();
       }
-
-      // Saving results for return value
-      const result: object[] = [];
-
-      // Iterate symbols
-      let i: number = 0;
-      for (const symbol of symbols) {
-        await page.goto(`https://finance.yahoo.com/quote/${symbol}`);
-        await page.waitForSelector('#Main table');
-
-        // Scrape Summary page
-        const summary = await page.$$eval(
-          '#Main table tbody tr',
-          (rows, shallowSymbol) => {
-            const obj: object = {Symbol: shallowSymbol};
-            // Iterate through table
-            Array.from(rows).map(row => {
-              (obj as any)[`${row.children[0].textContent}`] = `${
-                row.children[1].textContent
-              }`;
-            });
-            return obj;
-          },
-          // symbol injected in $$eval function
-          symbol,
-        );
-        result[i] = summary;
-
-        // Scrape Historical Data Page
-        await page.goto(`https://finance.yahoo.com/quote/${symbol}/history`);
-        await page.waitForSelector('#Main table');
-
-        // Scroll down to load data
-        page.evaluate(() => {
-          window.scrollBy(0, window.innerHeight * 10);
-        });
-
-        // Scrape pricing table
-        const prices = await page.$$eval(
-          '#Main table tbody tr',
-          (rows, symbolShadow) => {
-            const obj: any = {Symbol: symbolShadow, Prices: []};
-            Array.from(rows).map(row => {
-              const price: object = {};
-              (price as any)[`${row.children[0].textContent}`] = `${
-                row.children[1].textContent
-              }`;
-              obj.Prices.push(price);
-            });
-            return obj;
-          },
-          symbol,
-        );
-        // Assign prices to result map
-        Object.assign(result[i], prices);
-
-        // Iterate
-        i++;
-      }
-      this.data = result;
-      await this.browser.close();
     }
     return Promise.resolve();
   }
