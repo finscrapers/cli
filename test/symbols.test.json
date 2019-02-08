@@ -1,3 +1,7 @@
 {
-  "symbols": ["IBM", "MSFT", "FB", "AMZN"]
+  "symbols": ["IBM", "MSFT", "FB", "AMZN"],
+  "opts": {
+    "headless": true,
+    "slowMo": 250
+  }
 }

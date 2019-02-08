@@ -88,6 +88,7 @@ export default class Yahoo extends Bot {
           i++;
         }
         this.data = result;
+        this.save();
         await this.browser.close();
       } catch (error) {
         this.browser.close();
@@ -98,7 +99,7 @@ export default class Yahoo extends Bot {
   }
 
   // Saves scraped data to Elasticsearch
-  public async save(): Promise<ISymbol[]> {
+  protected async save(): Promise<any> {
     const model = {
       '1y Target Est': Types.number,
       '52 Week Range': Types.string,
@@ -141,9 +142,11 @@ export default class Yahoo extends Bot {
       await client.bulk({
         body: toOperations({index: 'symbols', type: '_doc'}, this.data, model),
       });
+      // Flush data storage
+      this.data = [{Symbol: ''}];
+      return Promise.resolve();
     } catch (error) {
-      throw new Error(error);
+      return Promise.reject(error);
     }
-    return Promise.resolve(this.data);
   }
 }
